@@ -1,0 +1,21 @@
+== DESCRIPTION
+
+The builder allows to create GET/POST requests with attached files.
+
+Tested with Rails 3
+
+== USAGE
+
+  NSDictionary *params = [NSDictionary dictionaryWithObjectsAndKeys:
+                                    @"first value", @"param_name_1",
+                                    @"second value", @"param_name_2", nil];
+  
+  URLRequestBuilder *builder = [[URLRequestBuilder alloc] initWithMethod:RequestMethodPost 
+                                                                     url:@"http://some.host.name/path"
+                                                              parameters:params];
+  
+  NSURLRequest * theRequest = [builder initRequest];
+  NSURLConnection * conn = [[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
+  [theRequest release];
+  [params release];
+  ...
