@@ -15,11 +15,13 @@
     method = theMethod;
     url = theUrl;
     [url retain];
-    parameters = theParameters;
-    [parameters retain];
+    params= theParameters;
+    [params retain];
     fileNames =     [[NSMutableArray alloc] init];
     fileMimeTypes = [[NSMutableArray alloc] init];
     fileContents =  [[NSMutableArray alloc] init];
+    fileParams =    [[NSMutableArray alloc] init];
+    _request = nil;
   }
   return self;
 }
@@ -42,25 +44,31 @@
   }  
 }
 
-- (NSURLRequest *)initRequest
+- (NSURLRequest *)request
 {
-  if (method == RequestMethodGet) 
+  if (_request == nil) 
   {
-    return [self initGetRequest];
+    if (method == RequestMethodGet) 
+    {
+      _request = [[self initGetRequest] autorelease];
+    }
+    else 
+    {
+      _request = [[self initPostRequest] autorelease];
+    }    
   }
-  else 
-  {
-    return [self initPostRequest];
-  }
+  return _request;
 }
 
 - (void)dealloc
 {
+  NSLog(@"params = %@", params);
   [url release];
-  [parameters release];
+  [params release];
   [fileNames release];
   [fileMimeTypes release];
   [fileContents release];
+  [fileParams release];
   [super dealloc];
 }
 
@@ -68,7 +76,7 @@
 - (NSURLRequest *)initGetRequest
 {  
   NSLog(@"initGetRequest");
-  return [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[URLRequestBuilder url:url withParameters:parameters]]
+  return [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[URLRequestBuilder url:url withParameters:params]]
                                cachePolicy:NSURLRequestUseProtocolCachePolicy
                            timeoutInterval:60.0];
 }
@@ -85,11 +93,11 @@
   [theRequest setValue:contentType forHTTPHeaderField:@"Content-type"];
   
   NSMutableData *postBody =[[NSMutableData alloc] init];
-  for (NSString * key in [parameters allKeys])
+  for (NSString * key in [params allKeys])
   {
     [postBody appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
     [postBody appendData:[[NSString stringWithFormat:@"Content-Disposition: form-data; name=\"%@\"\r\n\r\n", key] dataUsingEncoding:NSUTF8StringEncoding]];
-    [postBody appendData:[[NSString stringWithFormat:@"%@\r\n", [parameters objectForKey:key]] dataUsingEncoding:NSUTF8StringEncoding]];
+    [postBody appendData:[[NSString stringWithFormat:@"%@\r\n", [params objectForKey:key]] dataUsingEncoding:NSUTF8StringEncoding]];
   }
   
   for (NSInteger i = 0; i<[fileNames count]; i++)

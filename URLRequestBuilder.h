@@ -10,16 +10,18 @@ typedef enum {
 {
   RequestMethodType   method;
   NSString            *url;
-  NSDictionary        *parameters;
+  NSDictionary        *params;
   
   // file's data
   NSMutableArray      *fileParams;
   NSMutableArray      *fileNames;
   NSMutableArray      *fileMimeTypes;
   NSMutableArray      *fileContents;
+  
+  NSURLRequest        *_request;
 }
 
 - (id)initWithMethod:(RequestMethodType)method url:(NSString *)url parameters:(NSDictionary *)parameters;
 - (void)addFile:(NSData *)data paramName:(NSString *)paramName contentType:(NSString *)contentType fileName:(NSString *)fileName;
-- (NSURLRequest *)initRequest;
+- (NSURLRequest *)request;
 @end
