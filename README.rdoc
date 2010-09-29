@@ -15,10 +15,9 @@ Tested with Rails 3
                                                                      url:@"http://some.host.name/path"
                                                               parameters:params];
   // get NSURLRequest initialized with parameters
-  NSURLRequest * theRequest = [builder initRequest];
+  NSURLRequest * request = builder.request;
 
-
-  NSURLConnection * conn = [[NSURLConnection alloc] initWithRequest:theRequest delegate:self];
-  [theRequest release];
+  NSURLConnection * conn = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+  [builder release];
   [params release];
   ...
